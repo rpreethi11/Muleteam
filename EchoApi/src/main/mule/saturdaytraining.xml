@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6151545d-4e10-4467-924c-dc254de1abef" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="saturdaytrainingFlowSubflow" doc:id="4e7e564b-809d-4a2b-bff1-3418059cc52d" >
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="ff62022b-a644-4b8c-b5c5-fa4b0df6a343" variableName="Preethi" />
+	</flow>
+	<sub-flow name="saturdaytrainingSub_Flow" doc:id="e36fc45f-44cd-43df-a56a-d7063695661a" >
+		<logger level="INFO" doc:name="Logger" doc:id="02d1dfc2-88f3-408d-895b-e2860da24d22" message="#[payload]" />
+	</sub-flow>
+	<flow name="saturdaytrainingFlow" doc:id="b3eac738-a91a-4a3c-845d-a1dee9385f57">
+		<http:listener doc:name="Listener" doc:id="460ede18-2d42-486a-9496-e0af6ccc5c15" config-ref="HTTP_Listener_config" path="/echo" />
+		<flow-ref doc:name="Flow Reference" doc:id="98c35307-78fc-40af-a7ac-1b1583cf3d9f" name="saturdaytrainingSub_Flow" />
+		<ee:transform doc:name="Transform Message" doc:id="c306439f-c59e-4855-8174-71d7a84a39a5">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Name" : payload.FirstName ++ " " ++ payload.LastName
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="3eabb505-2600-4b60-810c-05c271a77be3" name="saturdaytrainingSub_Flow"/>
+	</flow>
+</mule>
